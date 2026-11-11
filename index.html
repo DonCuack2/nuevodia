@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buenos días, Isabella</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#1b1838; --dusk:#5d4283; --rose:#f2a2b3; --peach:#ffd1b0; --gold:#ffe29a;
+  --ink:#3b2342; --paper:#fff8f1; --heart:#e0496f;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif; --hand:'Caveat','Segoe Script',cursive;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--night);font-family:var(--serif);color:var(--ink)}
+.sky{position:fixed;inset:0;transition:opacity 3.2s ease}
+.sky.night{background:linear-gradient(#0f0d28,var(--night) 55%,#3a2a63)}
+.sky.dawn{background:linear-gradient(#ffb8c6 0%,var(--peach) 48%,var(--gold) 100%);opacity:0}
+body.risen .sky.dawn{opacity:1}
+.stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:.8}
+body.risen .stars{opacity:0;transition:opacity 2s}
+#sun{
+  position:fixed;left:50%;bottom:15vh;width:104px;height:104px;margin-left:-52px;border:0;padding:0;cursor:pointer;
+  border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff6cf,var(--gold) 55%,#ffb86b);
+  box-shadow:0 0 60px 20px rgba(255,214,130,.55);
+  transition:bottom 3.2s cubic-bezier(.3,.7,.2,1),box-shadow 3.2s,transform .3s;
+  animation:breathe 2.6s ease-in-out infinite;
+}
+#sun:focus-visible{outline:3px solid #fff;outline-offset:6px}
+body.risen #sun{bottom:62vh;box-shadow:0 0 120px 50px rgba(255,200,120,.6);animation:none;cursor:default}
+@keyframes breathe{50%{transform:scale(1.07)}}
+.hill{position:fixed;left:-10%;right:-10%;bottom:-6vh;height:24vh;border-radius:50% 50% 0 0/100% 100% 0 0;background:#2a1f4d;transition:background 3.2s}
+body.risen .hill{background:#b9638c}
+.hill.back{height:30vh;background:#3a2a63;bottom:-10vh;left:-30%;right:20%}
+body.risen .hill.back{background:#d98aa5}
+#hint{position:fixed;left:0;right:0;bottom:calc(15vh - 44px);text-align:center;color:#ffe9c9;font-family:var(--hand);font-size:1.7rem;z-index:6;transition:opacity .8s;pointer-events:none}
+#hint{bottom:5vh}
+main{position:fixed;inset:0;display:grid;place-items:center;z-index:5;padding:20px;pointer-events:none}
+main>*{pointer-events:auto}
+#greet{text-align:center;opacity:0;transform:translateY(14px);transition:opacity 1.2s,transform 1.2s;position:absolute;top:calc(50% + 4vh)}
+#greet.show{opacity:1;transform:none}
+#greet h1{font-size:clamp(2.2rem,8vw,3.8rem);font-weight:600;margin:0 0 6px;letter-spacing:-.01em;color:var(--ink)}
+#greet p{font-family:var(--hand);font-size:1.7rem;margin:0 0 22px;color:#6a3d5c}
+.btn{font-family:var(--serif);font-size:1.05rem;color:#fff;background:var(--heart);border:0;border-radius:999px;padding:13px 28px;cursor:pointer;box-shadow:0 8px 22px rgba(224,73,111,.35);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+#greet[hidden],#card[hidden]{display:none}
+#card{width:min(92vw,520px);background:var(--paper);border-radius:6px 6px 22px 22px;padding:34px 30px 28px;box-shadow:0 24px 60px rgba(60,20,60,.35);
+  opacity:0;transform:translateY(40px) rotate(-1deg);transition:opacity .9s,transform .9s;text-align:center;min-height:330px;display:flex;flex-direction:column;justify-content:space-between;
+  background-image:repeating-linear-gradient(transparent 0 33px,rgba(224,73,111,.1) 33px 34px)}
+#card.show{opacity:1;transform:none}
+#text{font-family:var(--hand);font-size:clamp(1.7rem,6vw,2.2rem);line-height:1.34;margin:0;flex:1;display:grid;place-items:center;opacity:0;transform:translateY(8px);transition:opacity .6s,transform .6s}
+#text.in{opacity:1;transform:none}
+.dots{display:flex;gap:8px;justify-content:center;margin:0 0 18px}
+.dots b{width:8px;height:8px;border-radius:50%;background:#e8cfd6;transition:background .4s,transform .4s}
+.dots b.on{background:var(--heart);transform:scale(1.35)}
+#finale{display:none;flex-direction:column;align-items:center;gap:6px}
+#card.end #finale{display:flex}
+#card.end #text,#card.end .dots,#card.end #next{display:none}
+#heart{font-size:5.2rem;line-height:1;background:none;border:0;cursor:pointer;padding:6px;animation:beat 1.3s ease-in-out infinite;filter:drop-shadow(0 8px 14px rgba(224,73,111,.4))}
+#heart:focus-visible{outline:3px solid var(--ink);border-radius:20px}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.16)}30%{transform:scale(1)}45%{transform:scale(1.1)}}
+#finale h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.9rem,7vw,2.6rem);margin:6px 0 0;color:var(--heart)}
+#finale p{font-family:var(--hand);font-size:1.7rem;margin:0;color:var(--ink)}
+#finale small{font-family:var(--serif);font-style:italic;color:#8a6a7d;margin-top:10px}
+.fx{position:fixed;z-index:20;pointer-events:none;font-size:1.6rem;will-change:transform,opacity}
+@media (prefers-reduced-motion:reduce){
+  #sun,#heart{animation:none}
+  .sky,#sun,.hill,#greet,#card,#text{transition-duration:.01s}
+}
+</style>
+</head>
+<body>
+<div class="sky night"><div class="stars" id="stars"></div></div>
+<div class="sky dawn"></div>
+<div class="hill back"></div>
+<button id="sun" aria-label="Toca el sol para que amanezca"></button>
+<div class="hill"></div>
+<div id="hint">Toca el sol</div>
+
+<main>
+  <section id="greet">
+    <h1>Buenos días, Isabella</h1>
+    <p>Amaneció pensando en ti</p>
+    <button class="btn" id="open">Abrir tu carta</button>
+  </section>
+
+  <section id="card" hidden aria-live="polite">
+    <div>
+      <div class="dots" id="dots"></div>
+      <p id="text"></p>
+    </div>
+    <div id="finale">
+      <button id="heart" aria-label="Enviar amor">💗</button>
+      <h2>Te amo muchísimo</h2>
+      <p>Que tengas un día hermoso, pese a todos los problemas Isabella solo quieria recordarte lo mucho que te amo.</p>
+      <small>Toca el corazón otra vez</small>
+    </div>
+    <div style="margin-top:20px"><button class="btn" id="next">Seguir</button></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)};
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var steps=[
+    "Buenos días Isabella. Quería que lo primero que encontraras al despertar fueran estas pequeñas palabras, escritas desde lo más profundo de mi corazón.",
+    "Sé que a veces mis inseguridades me hacen actuar de maneras que no quisiera y que, sin darme cuenta, puedo llegar a lastimarte. Créeme que nunca ha sido mi intención y en realidad me duele saber que te hice enojar y, por eso, quiero pedirte perdón de corazón.",
+    "No quiero que un mal momento opaque lo bonito que siento por ti. Eres una luz en mi vida, esa luz que ilumina y abriga a mi triste y frio corazon",
+    "Perdóname, Isabella. Te amo, y si hay algo que deseo, es verte feliz, sonriendo y disfrutando cada día.  Ojalá este pequeño detalle consiga robarte una sonrisa y recordarte lo especial que eres para mí.",
+    "QUE TENGAS UN HERMOSO DÍA, MI NIÑA. Y NUNCA OLVIDES QUE, ENTRE TANTAS COSAS BONITAS QUE TIENE LA VIDA, TÚ ERES UNA DE MIS FAVORITAS."
+  ];
+  var i=0, busy=false;
+
+  // estrellas
+  var st=$('#stars');
+  for(var s=0;s<50;s++){
+    var d=document.createElement('i');
+    d.style.left=Math.random()*100+'%'; d.style.top=Math.random()*60+'%';
+    d.style.opacity=.3+Math.random()*.7; d.style.transform='scale('+(.5+Math.random())+')';
+    st.appendChild(d);
+  }
+  // puntos de progreso
+  var dots=$('#dots');
+  steps.forEach(function(){dots.appendChild(document.createElement('b'))});
+
+  function rise(){
+    if(document.body.classList.contains('risen'))return;
+    document.body.classList.add('risen');
+    $('#hint').style.opacity=0;
+    $('#sun').setAttribute('aria-label','Sol');
+    setTimeout(function(){$('#greet').classList.add('show')},reduce?100:2400);
+  }
+  $('#sun').addEventListener('click',rise);
+
+  function show(n){
+    var t=$('#text');
+    t.classList.remove('in');
+    setTimeout(function(){
+      t.textContent=steps[n];
+      [].forEach.call(dots.children,function(b,k){b.classList.toggle('on',k===n)});
+      $('#next').textContent=(n===steps.length-1)?'Una cosita más':'Seguir';
+      t.classList.add('in'); busy=false;
+    },reduce?0:350);
+  }
+  $('#open').addEventListener('click',function(){
+    $('#greet').classList.remove('show');
+    setTimeout(function(){
+      $('#greet').hidden=true;
+      var c=$('#card'); c.hidden=false;
+      void c.offsetWidth; c.classList.add('show'); show(0);
+    },reduce?0:700);
+  });
+  $('#next').addEventListener('click',function(){
+    if(busy)return; busy=true;
+    if(i<steps.length-1){ i++; show(i); }
+    else{
+      $('#card').classList.add('end'); busy=false;
+      var r=$('#heart').getBoundingClientRect();
+      burst(r.left+r.width/2,r.top+r.height/2,26);
+    }
+  });
+
+  var icons=['💗','🌸','💕','🌷','🦋','✨'];
+  function burst(x,y,n){
+    if(reduce)return;
+    for(var k=0;k<n;k++){
+      var e=document.createElement('span');
+      e.className='fx'; e.textContent=icons[Math.floor(Math.random()*icons.length)];
+      e.style.left=x+'px'; e.style.top=y+'px';
+      document.body.appendChild(e);
+      var a=Math.random()*Math.PI*2, v=90+Math.random()*190;
+      var dx=Math.cos(a)*v, dy=Math.sin(a)*v-110, rot=(Math.random()-.5)*420;
+      var an=e.animate([
+        {transform:'translate(-50%,-50%) scale(.4)',opacity:1},
+        {transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px)) rotate('+rot+'deg) scale(1.1)',opacity:1,offset:.55},
+        {transform:'translate(calc(-50% + '+(dx*1.15)+'px),calc(-50% + '+(dy+260)+'px)) rotate('+(rot*1.5)+'deg) scale(.9)',opacity:0}
+      ],{duration:1700+Math.random()*900,easing:'cubic-bezier(.2,.7,.4,1)'});
+      an.onfinish=(function(el){return function(){el.remove()}})(e);
+    }
+  }
+  $('#heart').addEventListener('click',function(ev){
+    var r=this.getBoundingClientRect();
+    burst(r.left+r.width/2,r.top+r.height/2,22);
+  });
+})();
+</script>
+</body>
+</html>
